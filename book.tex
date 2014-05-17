@@ -9,6 +9,30 @@
 \usepackage[ruled]{algorithm2e}
 \usepackage{empheq}
 \usepackage{float}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  keepspaces=true,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
 
 \title{Algorithmic Programming in Java}
 \author{Rodion Efremov} 
@@ -19,10 +43,46 @@
 \part*{Preface}
 This book is aiming to provide insight into practical implementation of algorithms and data structures in a way that is as accessible to readers of all proficiency levels. Only very basic knowledge of Java programming language and other tools is assumed; wherever relevant, the new language features are explained succinctly without further ado. The book is organized in a ``bottom-up'' fashion so that the book is better read linearly, but not necessarily continuously whenever some topics do not interest. There is no exercises. Instead, the book presents the code listings for a Java library of algorithms and data structures, so the book might be used as a collection of ``algorithmic recipes''. 
 
-The second objective is to provide a gentle introduction to formalism taking place in computer science independent of particular tool sets. By formalism we mean most often pseudo-code, set notation, sequences and functions. We, however, will not do any fancy mathematics with Greek letters such as proving theorems, etc. Whether to learn using formalism or not mainly depend on your academic aims: in case you aim to enroll in a department of computer science, this book just might be everything you need to get prepared for your studies.
+The second objective is to provide a gentle introduction to formalism taking place in computer science independent of particular tool sets. By formalism we mean most often pseudo-code, set notation, sequences and functions. We, however, will not do any fancy mathematics with Greek letters such as proving theorems, etc. Whether to learn using formalism or not mainly depend on your academic aims: in case you are planning to enroll in a department of computer science, this book just might be everything you need to get prepared for your studies.
 
 \part{Introduction}
+This part will introduce the reader to common ground for successive parts of the book. The topics covered are coding conventions for the library we will implement, using \textbf{Maven} to manage your version of the library, and using \textbf{git} to store your version of the library.
 
 \chapter{Coding conventions}
 
+\section{Naming types, methods and variables}
+The Java community encourages using ``CameCase'' to name your identifiers. For instance, \texttt{elementAmount}, \texttt{nodePriority} are identifiers for local variables or class fields adhering to CamelCase style. Following the intuition, \texttt{getSize} or \texttt{decreasePriority} are (in some sense) ``good'' names for class methods. The naming convention for user-defined types makes a small exception to the above rule: the first letter is capitalized: \texttt{PathFinder}, \texttt{DirectedGraphNode}.
+
+\section{Fluent API}
+While developing a software library $L$, the top priority is keeping $L$'s API (application programming interface) as simple as possible. Simplicity does not come automatically with the presence of Javadoc\footnote{A documenting tool included in Java Development Kit.} in each class in $L$. Consider the following code snippet:
+\begin{lstlisting}
+Node source = ...;
+Node target = ...;
+Path<Node> p = new DijkstraFinder<Node>().search(source, target);
+\end{lstlisting}
+\newpage
+\noindent This is intuitive and easy to remember. On the contrary, the following is not quite:
+\begin{lstlisting}[caption={Too much arguments for a method call},label=lst:bidirastarfinder1]
+Node source = ...;
+Node target = ...;
+PriorityQueue<Node> queue = ...;
+HeuristicFunction<Node> h1 = ...;
+HeuristicFunction<Node> h2 = ...;
+Path<Node> p = new BidirectionalAStarFinder<Node>().search(source, 
+							   target, 
+							   queue, 
+							   h1, 
+							   h2);
+\end{lstlisting}
+There is a way to make an API more convenient, and it is usually called ``fluent'' API, where a call to a function is prepared piece by piece in the following manner:
+\begin{lstlisting}
+Path<Node> p = usingBidirectionalAStarFinder<Node>
+              .from(source)
+              .to(target)
+              .withPriorityQueue(queue)
+              .withForwardHeuristic(h1)
+              .withBackwardsHeuristic(h2)
+              .search();
+\end{lstlisting}
+The above listing is an improvement over Listing \ref{lst:bidirastarfinder1}.
 \end{document}
