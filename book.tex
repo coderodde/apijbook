@@ -85,4 +85,127 @@ Path<Node> p = usingBidirectionalAStarFinder<Node>
               .search();
 \end{lstlisting}
 The above listing is an improvement over Listing \ref{lst:bidirastarfinder1}.
+
+Now that we know the name of the technique, let's see a working example:
+\lstset{
+  numbers=left
+}
+\begin{lstlisting}
+public class Main {
+    
+    public static void main(String... args) {
+        String result1 = begin().withSource("France")
+                                .withTarget("Japan")
+                                .withAlgorithm1();
+        
+        String result2 = begin().withSource("Germany")
+                                .withTarget("Finland")
+                                .withAlgorithm2();
+        
+        System.out.println(result1);
+        System.out.println(result2);
+    }
+    
+    static SourceNodeSelector begin() {
+        return new SourceNodeSelector();
+    }
+}
+
+abstract class Algorithm {
+    protected TargetNodeSelector targetNodeSelector;
+    
+    abstract String execute();
+    
+    Algorithm(TargetNodeSelector targetNodeSelector) {
+        this.targetNodeSelector = targetNodeSelector;
+    }
+}
+
+class Algorithm1 extends Algorithm {
+    
+    Algorithm1(TargetNodeSelector targetNodeSelector) {
+        super(targetNodeSelector);
+    }
+    
+    String execute() {
+        return "ALGORITHM1 from " + targetNodeSelector.getSource() + " to " +
+               targetNodeSelector.getTarget();
+    }
+}
+
+class Algorithm2 extends Algorithm {
+    
+    Algorithm2(TargetNodeSelector targetNodeSelector) {
+        super(targetNodeSelector);
+    }
+    
+    String execute() {
+        return "ALGORITHM2 from " + targetNodeSelector.getSource() + " to " +
+                targetNodeSelector.getTarget();
+    }
+}
+
+class SourceNodeSelector {
+    private String source;
+    
+    TargetNodeSelector withSource(String source) {
+        this.source = source;
+        return new TargetNodeSelector(this);
+    }
+    
+    String getSource() {
+        return source;
+    }
+}
+
+class TargetNodeSelector {
+    private SourceNodeSelector sourceNodeSelector;
+    private String target;
+    
+    TargetNodeSelector(SourceNodeSelector sourceNodeSelector) {
+        this.sourceNodeSelector = sourceNodeSelector;
+    }
+    
+    AlgorithmSelector withTarget(String target) {
+        this.target = target;
+        return new AlgorithmSelector(this);
+    }
+    
+    SourceNodeSelector getSourceNodeSelector() {
+        return sourceNodeSelector;
+    }
+    
+    String getSource() {
+        return sourceNodeSelector.getSource();
+    }
+    
+    String getTarget() {
+        return target;
+    }
+}
+
+class AlgorithmSelector {
+    private TargetNodeSelector targetNodeSelector;
+    
+    AlgorithmSelector(TargetNodeSelector targetNodeSelector) {
+        this.targetNodeSelector = targetNodeSelector;
+    } 
+    
+    public String withAlgorithm1() {
+        return new Algorithm1(targetNodeSelector).execute();
+    }
+    
+    public String withAlgorithm2() {
+        return new Algorithm2(targetNodeSelector).execute();
+    }
+}
+\end{lstlisting}
+You can see a fluent API in action at lines 4 and 8. First of all, this is more explicit about the meaning of each argument passed to a method. Second point is the fact that the sequence of arguments being ``built'' is fixed, you cannot write \texttt{withTarget(...)} before \texttt{withSource(...)} (see). Also, you will get a compilation error whenever you forgot to specify an argument of a fluent API call:
+\newpage
+\begin{lstlisting}
+begin().withSource("France")
+       .withAlgorithm1();  // Compile-time error: wihSource returns 
+                           // TargetNodeSelector which has no 
+                           // withAlgorithm1.
+\end{lstlisting}
 \end{document}
