@@ -1,4 +1,4 @@
-\documentclass{book}
+\documentclass[oneside]{book}
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -40,16 +40,17 @@
 \begin{document}
 \maketitle
 
-\part*{Preface}
+\chapter*{Preface}
 This book is aiming to provide insight into practical implementation of algorithms and data structures in a way that is as accessible to readers of all proficiency levels. Only very basic knowledge of Java programming language and other tools is assumed; wherever relevant, the new language features are explained succinctly without further ado. The book is organized in a ``bottom-up'' fashion so that the book is better read linearly, but not necessarily continuously whenever some topics do not interest. There is no exercises. Instead, the book presents the code listings for a Java library of algorithms and data structures, so the book might be used as a collection of ``algorithmic recipes''. 
 
-The second objective is to provide a gentle introduction to formalism taking place in computer science independent of particular tool sets. By formalism we mean most often pseudo-code, set notation, sequences and functions. We, however, will not do any fancy mathematics with Greek letters such as proving theorems, etc. Whether to learn using formalism or not mainly depend on your academic aims: in case you are planning to enroll in a department of computer science, this book just might be everything you need to get prepared for your studies.
+The second objective is to provide a gentle introduction to formalism taking place in computer science independent of particular tool sets. By formalism we mean most often pseudo-code, big O notation, set notation, sequences and functions. We, however, will not do any fancy mathematics with Greek letters such as proving theorems, etc. Whether to learn using formalism or not mainly depend on your academic aims: in case you are planning to enroll in a department of computer science, this book just might be everything you need to get prepared for your studies.
 
+\makeatletter\@openrightfalse
 \part{Introduction}
 This part will introduce the reader to common ground for successive parts of the book. The topics covered are coding conventions for the library we will implement, using \textbf{Maven} to manage your version of the library, and using \textbf{git} to store your version of the library.
 
 \chapter{Coding conventions}
-
+\@openrighttrue\makeatother
 \section{Naming types, methods and variables}
 The Java community encourages using ``CameCase'' to name your identifiers. For instance, \texttt{elementAmount}, \texttt{nodePriority} are identifiers for local variables or class fields adhering to CamelCase style. Following the intuition, \texttt{getSize} or \texttt{decreasePriority} are (in some sense) ``good'' names for class methods. The naming convention for user-defined types makes a small exception to the above rule: the first letter is capitalized: \texttt{PathFinder}, \texttt{DirectedGraphNode}.
 
@@ -200,12 +201,21 @@ class AlgorithmSelector {
     }
 }
 \end{lstlisting}
-You can see a fluent API in action at lines 4 and 8. First of all, this is more explicit about the meaning of each argument passed to a method. Second point is the fact that the sequence of arguments being ``built'' is fixed, you cannot write \texttt{withTarget(...)} before \texttt{withSource(...)} (see). Also, you will get a compilation error whenever you forgot to specify an argument of a fluent API call:
+You can see a fluent API in action at lines 4 and 8. First of all, this is more explicit about the meaning of each argument passed to a method. Second point is the fact that the sequence of arguments being ``built'' is fixed, you cannot write \texttt{withTarget(...)} before \texttt{withSource(...)} (see). Also, you will get a compilation error whenever you forget to specify an argument of a fluent API call:
 \newpage
-\begin{lstlisting}
+\lstset{
+numbers=none
+}
+\begin{lstlisting}[caption={Bad fluent API call},label=lst:badfluentapi]
 begin().withSource("France")
-       .withAlgorithm1();  // Compile-time error: wihSource returns 
+       .withAlgorithm1();  // Compile-time error: withSource returns 
                            // TargetNodeSelector which has no 
                            // withAlgorithm1.
 \end{lstlisting}
+The last but not least, modern IDE's (integrated development environments) support code-completion, which makes it easier to write syntactically correct code. For instance, in Listing \ref{lst:badfluentapi}, a good IDE, after writing \\ \texttt{begin().withSource(...)}, will give a list of suggestions containing \texttt{withTarget} - method. That way, you don't need to remember each and every function, the IDE will guide you through making calls to a fluent API methods.
+
+\section{Using Maven for managing the projects}
+
+\section{Working with git}
+
 \end{document}
