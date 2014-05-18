@@ -345,7 +345,7 @@ public class Utils {
         checkMinMax(min, max);
         final Integer[] arr = new Integer[size];
         
-        for (int i = 0; i != size; ++i) {
+        for (int i = 0; i < size; ++i) {
             arr[i] = r.nextInt(max - min + 1) + min;
         }
         
@@ -374,7 +374,7 @@ Suppose we come up with an integer $i$, and we want to find the least index in t
             return INDEX_NOT_FOUND;
         }
         
-        for (int i = 0; i != array.length; ++i) {
+        for (int i = 0; i < array.length; ++i) {
             if (array[i].equals(element)) {
                 return i;
             }
