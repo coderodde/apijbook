@@ -13,6 +13,9 @@
 \usepackage{listings}
 \usepackage{color}
 
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{5}
+
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
@@ -42,6 +45,7 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 
 \chapter*{Preface}
 This book is aiming to provide insight into practical implementation of algorithms and data structures in a way that is as accessible to readers of all proficiency levels. Only very basic knowledge of Java programming language and other tools is assumed; wherever relevant, the new language features are explained succinctly without further ado. The book is organized in a ``bottom-up'' fashion so that the book is better read linearly, but not necessarily continuously whenever some topics do not interest. There is no exercises. Instead, the book presents the code listings for a Java library of algorithms and data structures, so the book might be used as a collection of ``algorithmic recipes''. 
@@ -52,7 +56,7 @@ The second objective is to provide a gentle introduction to formalism taking pla
 \part{Introduction}
 This part will introduce the reader to common ground for successive parts of the book. The topics covered are coding conventions for the library we will implement, using \textbf{Maven} to manage your version of the library, and using \textbf{git} to store your version of the library.
 
-\chapter{Coding conventions}
+\chapter{Coding conventions and tools}
 \@openrighttrue\makeatother
 \section{Naming types, methods and variables}
 The Java community encourages using ``CameCase'' to name your identifiers. For instance, \texttt{elementAmount}, \texttt{nodePriority} are identifiers for local variables or class fields adhering to CamelCase style. Following the intuition, \texttt{getSize} or \texttt{decreasePriority} are (in some sense) ``good'' names for class methods. The naming convention for user-defined types makes a small exception to the above rule: the first letter is capitalized: \texttt{PathFinder}, \texttt{DirectedGraphNode}.
@@ -216,7 +220,8 @@ begin().withSource("France")
 \end{lstlisting}
 The last but not least, modern IDE's (integrated development environments) support code-completion, which makes it easier to write syntactically correct code. For instance, in Listing \ref{lst:badfluentapi}, a good IDE, after writing \\ \texttt{begin().withSource(...)}, will give a list of suggestions containing \texttt{withTarget} - method. That way, you don't need to remember each and every function, the IDE will guide you through making calls to a fluent API methods.
 
-\section{Using Maven for managing the projects}
+\section{Bare necessities}
+\subsection{Using Maven for managing the projects}
 Developing a library regardless of a language, usually results in dozens of files, which makes it inconvenient to work at the lowest level (invoking \textbf{javac} and \textbf{java} every time she or he recompiles a project). Maven is a build tool remedying the issue. First, we might want to create Maven-driven Java project:
 \begin{verbatim}
 mvn archetype:create -DgroupId=com.example -DartifactId=my-proj
@@ -259,8 +264,8 @@ keywordstyle=\color{blck},
   </dependencies>
 </project>
 \end{lstlisting}
-Now, if we type \textbf{mvn test} from the directory \textbf{my-proj}, Maven will compile all the sources in the project and run all available tests. If we add the following XML snippet into the \textbf{pom.xml} right after the \textbf{</dependencies>} closing tag.
-\begin{lstlisting}
+Now, if we type \textbf{mvn test} from the directory \textbf{my-proj}, Maven will compile all the sources in the project and run all available tests. If we add the XML snippet in the Listing \ref{lst:mvnexecjava} into the \textbf{pom.xml} right after the \textbf{</dependencies>} closing tag, we could run the project simply by typing \textbf{mvn exec:java} in the directory containing the project's \textbf{pom.xml}.
+\begin{lstlisting}[caption={Configuring Maven exec plugin},label=lst:mvnexecjava]
 <build>
   <plugins>
     <plugin>
@@ -281,8 +286,55 @@ Now, if we type \textbf{mvn test} from the directory \textbf{my-proj}, Maven wil
   </plugins>
 </build>
 \end{lstlisting}
-we could run the project simply by typing \textbf{mvn exec:java} from the directory containing \textbf{pom.xml}.
 
-\section{Working with git}
+\subsection{Working with git}
+The last tool we will discuss is \textbf{git}, a distributed source code management software. This is by no means mandatory for following this book, so if you don't need a place on Internet where you can store your code, feel free to omit this section.
+
+\subsubsection{Basic git workflow}
+The easiest way to maintain a \textbf{repository}\footnote{A file system subtree comprising a software project.} is to register at \textbf{github.com} and create a repository from the site's web interface. Suppose your nickname was \textbf{Sheila}, and you created a repository \textbf{spacer}. So as to put some code into her repository, Sheila would write from her terminal:
+\begin{verbatim}
+git init
+git add . # (dot) as everything beginning from current directory
+git commit -m "Your commit message"
+git remote add origin git@github.com:Sheila/spacer.git
+git push -u origin master
+\end{verbatim}
+Next, whenever Sheila modifies files in local instance of \textbf{spacer}, the following routine would update the repository at \textbf{github.com}:
+\begin{verbatim}
+git status # show which files where created/modified/removed
+git add . 
+git status
+git commit -m "New commit message"
+git push
+\end{verbatim}
+The second invocation of \textbf{git status} will show which files were included in a commit; if not already colorful, you might make the output of \textbf{git status} funkier by running from the console:
+\begin{verbatim}
+git config --global color.ui auto
+\end{verbatim}
+\part{Basic algorithms and data structures}  
+
+\chapter{Fundamental algorithms}
+In this chapter we will implement some very basic algorithms and establish their ``complexities''.
+
+\section{Initializing a project}
+Most Java programs and libraries a structured in class files and packages. The class files define classes (user-defined types), and whenever a user-defined type is called $T$, the file implementing $T$ is called $T$\textbf{.java}. Most of Java files belong to a package, which is ``implemented'' as a simple folder. Along Java files, a package may contain other packages. This structure does not, however, contain cycles, i.e. the source code of a Java software item is a \textbf{tree} somewhere in the file system. 
+
+Every package should be named by a lower-case string, and the topmost package hierarchy should resemble the domain name of a business having developed the software: \textbf{com.coderodde.apij.graph}, \textbf{com.coderodde.apij.ds}, etc. 
+
+As above, the three topmost packages of the library we will develop during the course of this book, are \textbf{com}, \textbf{com.coderodde} and \textbf{com.coderodde.apij}. You may choose whatever you want (for instance, $P$). So whenever you see \textbf{com.coderodde.apij}, just substitute it with your $P$.
+\section{Generating data}
+Now, let's create a package \textbf{com.coderodde.apij.util} and add file \textbf{Utils.java} to it:
+\lstset{
+language=Java,
+numberstyle=\tiny\color{gray},
+keywordstyle=\color{blue},
+commentstyle=\color{dkgreen}}
+\begin{lstlisting}
+package com.coderodde.apij.util;
+
+import java.util.Random;
+\end{lstlisting}
+
+\chapter{Fundamental data structures}
 
 \end{document}
