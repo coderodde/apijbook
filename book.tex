@@ -12,6 +12,7 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{fullpage}
 
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{5}
@@ -322,18 +323,92 @@ Most Java programs and libraries a structured in class files and packages. The c
 Every package should be named by a lower-case string, and the topmost package hierarchy should resemble the domain name of a business having developed the software: \textbf{com.coderodde.apij.graph}, \textbf{com.coderodde.apij.ds}, etc. 
 
 As above, the three topmost packages of the library we will develop during the course of this book, are \textbf{com}, \textbf{com.coderodde} and \textbf{com.coderodde.apij}. You may choose whatever you want (for instance, $P$). So whenever you see \textbf{com.coderodde.apij}, just substitute it with your $P$.
-\section{Generating data}
-Now, let's create a package \textbf{com.coderodde.apij.util} and add file \textbf{Utils.java} to it:
+\section{Generating data and searching}
+Now, let's create a package \textbf{com.coderodde.apij.util} and add the file \textbf{Utils.java} to it:
 \lstset{
 language=Java,
 numberstyle=\tiny\color{gray},
 keywordstyle=\color{blue},
-commentstyle=\color{dkgreen}}
+commentstyle=\color{dkgreen},
+numbers=left}
 \begin{lstlisting}
 package com.coderodde.apij.util;
 
 import java.util.Random;
+
+public class Utils {
+    
+    public static final Integer[] getRandomIntegerArray(final int size,
+                                                        final int min,
+                                                        final int max,
+                                                        final Random r) {
+        checkMinMax(min, max);
+        final Integer[] arr = new Integer[size];
+        
+        for (int i = 0; i != size; ++i) {
+            arr[i] = r.nextInt(max - min + 1) + min;
+        }
+        
+        return arr;
+    }
+    
+    private static final <T extends Comparable<? super T>> void 
+    checkMinMax(T min, T max) {
+        if (min.compareTo(max) > 0) {
+            // Here we have "min > max".
+            throw new IllegalArgumentException("'min' is larger than 'max'.");
+        }
+    }
+}
 \end{lstlisting}
+Because all but the most obvious methods will be explained in text, I will omit their respective javadoc comments. Now, the method \textbf{checkMinMax} maintains the invariant of \textbf{min} being no more than \textbf{max}, and if it fails, an exception with a message reporting the root cause is thrown. Actually, we could have omitted the entire check, but in the case the invariant ``$\textbf{min} \leq \textbf{max}$'' would have been invalidated, the exception would have been thrown on line 15 in the above listing; this is fine, but might be less obvious than the message originating from \textbf{checkMinMax}. We will stick to such defensive style as to provide the error messages as soon as possible and not ``$N$ calls later''.
+
+Now, the method \textbf{getRandomIntegerArray} will generate an array of \textbf{size} \textbf{Integer} wrappers with each integer belonging to range $R = [\textbf{min}, \textbf{max}]$ (every element in $R$ is equiprobable).
+
+Suppose we come up with an integer $i$, and we want to find the least index in the integer array having value $i$. The following algorithm scans through the array and as soon as it gets to an integer being equal to $i$, returns the index of that integer. (In case no match was found, it is conventional to return a negative index, such as $-1$, to indicate that.)
+\begin{lstlisting}[caption={Linear search algorithm}]
+    public static final int INDEX_NOT_FOUND = -1;
+    
+    public static final <T> int findIndexOf(final T[] array, final T element) {
+        if (array == null) {
+            return INDEX_NOT_FOUND;
+        }
+        
+        for (int i = 0; i != array.length; ++i) {
+            if (array[i].equals(element)) {
+                return i;
+            }
+        }
+        
+        return INDEX_NOT_FOUND;
+    }
+\end{lstlisting}
+\textbf{Utils.java} would be a good place for our linear search. What about order statistics such as minimum or maximum value in an array? That easiness belongs to \textbf{Utils.java} as well:
+\begin{lstlisting}
+    public static final <T extends Comparable<? super T>> 
+        int findMaximum(final T[] array) {
+        if (array == null || array.length == 0) {
+            return INDEX_NOT_FOUND;
+        }
+        
+        T max = array[0];
+        int index = INDEX_NOT_FOUND;
+        
+        for (int i = 1; i < array.length; ++i) {
+            final T current = array[i];
+            
+            if (max.compareTo(current) < 0) {
+                max = current;
+                index = i;
+            }
+        }
+        
+        return index;
+    }
+\end{lstlisting}
+
+\subsection{Efficiency considerations}
+One natural question to ask is how efficient is the algorithm $A$? This might be understood as the question how much time will $A$ take to execute on a machine $M$. That's no good. Different machines will give different duration, and even worse, same machine may yield particularly dispersed execution times even for the same algorithm and input data (unless we are talking about real-time systems). Instead, a better question is ``how well $A$ scales with regard to the size of input data''? Whenever we pass an array of $N$ elements to \textbf{findMaximum}, it will do $N$ \textit{constant-time} operations to find the maximum element. So when you double the size of input data, you effectively double the duration. One may say that \textbf{findMaximum} runs in \textit{linear time} \textbf{or} $O(N)$ time. Our linear search exhibits the same time bound as \textbf{findMaximum} in the worst case: double the size of input array and you double the execution duration in the worst case. Little later we will see how to search a particular element in an array in $O(\log N)$ time.
 
 \chapter{Fundamental data structures}
 
