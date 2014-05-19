@@ -222,7 +222,7 @@ begin().withSource("France")
 The last but not least, modern IDE's (integrated development environments) support code-completion, which makes it easier to write syntactically correct code. For instance, in Listing \ref{lst:badfluentapi}, a good IDE, after writing \\ \texttt{begin().withSource(...)}, will give a list of suggestions containing \texttt{withTarget} - method. That way, you don't need to remember each and every function, the IDE will guide you through making calls to a fluent API methods.
 
 \section{Bare necessities}
-\subsection{Using Maven for managing the projects}
+\subsection{Using Maven for managing projects}
 Developing a library regardless of a language, usually results in dozens of files, which makes it inconvenient to work at the lowest level (invoking \textbf{javac} and \textbf{java} every time she or he recompiles a project). Maven is a build tool remedying the issue. First, we might want to create Maven-driven Java project:
 \begin{verbatim}
 mvn archetype:create -DgroupId=com.example -DartifactId=my-proj
@@ -314,7 +314,7 @@ git config --global color.ui auto
 \end{verbatim}
 \part{Basic algorithms and data structures}  
 
-\chapter{Fundamental algorithms}
+\chapter{Fundamental algorithms and complexity}
 In this chapter we will implement some very basic algorithms and establish their ``complexities''.
 
 \section{Initializing a project}
@@ -410,6 +410,56 @@ Suppose we come up with an integer $i$, and we want to find the least index in t
 \subsection{Efficiency considerations}
 One natural question to ask is how efficient is the algorithm $A$? This might be understood as the question how much time will $A$ take to execute on a machine $M$. That's no good. Different machines will give different duration, and even worse, same machine may yield particularly dispersed execution times even for the same algorithm and input data (unless we are talking about real-time systems). Instead, a better question is ``how well $A$ scales with regard to the size of input data''? Whenever we pass an array of $N$ elements to \textbf{findMaximum}, it will do $N$ \textit{constant-time} operations to find the maximum element. So when you double the size of input data, you effectively double the duration. One may say that \textbf{findMaximum} runs in \textit{linear time} \textbf{or} $O(N)$ time. Our linear search exhibits the same time bound as \textbf{findMaximum} in the worst case: double the size of input array and you double the execution duration in the worst case. Little later we will see how to search a particular element in an array in $O(\log N)$ time.
 
+\section{Sorting introduced (Insertion sort)}
+
+\section{Binary search}
+
+\section{Algorithm complexit}
+
+\subsection{Big O notation}
+
+\subsection{Case study: Kadane's algorithm}
+
 \chapter{Fundamental data structures}
+
+\section{Array-based lists}
+
+\section{Linked lists}
+
+\section{Linked array list}
+
+\section{Stacks}
+
+\section{Unbalanced binary trees}
+
+\subsection{Tree traversal}
+
+\section{Hash tables}
+
+\chapter{Sorting}
+
+\section{Easy sorts}
+
+\subsection{Bubble sort}
+
+\subsection{Comb sort}
+
+\subsection{Tree sort}
+
+\section{Efficient sorting}
+
+\subsection{Introduction}
+
+\subsection{Quicksort}
+
+\subsection{Heap sort}
+
+\subsection{Merge sort}
+
+\subsubsection{Recursive merge sort}
+
+\subsubsection{Bottom-up merge sort}
+
+\subsubsection{Natural merge sort}
 
 \end{document}
